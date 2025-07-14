@@ -15,12 +15,17 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\CheckboxList;
+use Spatie\Permission\Models\Role;
+use Filament\Tables\Columns\BadgeColumn;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'User Management';
+    protected static ?string $navigationLabel = 'Users';
 
     public static function form(Form $form): Form
     {
@@ -28,7 +33,15 @@ class UserResource extends Resource
             ->schema([
                 TextInput::make('name')->required(),
                 TextInput::make('email')->email()->required(),
-                TextInput::make('password')->password()->required()->dehydrateStateUsing(fn ($state) => bcrypt($state)),
+                TextInput::make('password')->password()->required()->dehydrateStateUsing(fn ($state) => bcrypt($state))
+                ->dehydrated(fn ($state) => filled($state)) ->visibleOn('create'), // only update if not empty
+                // optional: hide on edit
+
+                CheckboxList::make('roles')
+                    ->relationship('roles', 'name')
+                    ->columns(2)
+                    ->label('Assign Roles')
+                    ->helperText('Choose the role(s) for this user.'),
             ]);
     }
 
@@ -39,6 +52,10 @@ class UserResource extends Resource
                 TextColumn::make('id'),
                 TextColumn::make('name'),
                 TextColumn::make('email'),
+                TextColumn::make('roles.name')
+                    ->label('Roles')
+                    ->badge()
+                    ->colors(['primary']),
                 TextColumn::make('email_verified_at')->dateTime(),
                 TextColumn::make('created_at')->since(),
             ])
@@ -47,6 +64,7 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

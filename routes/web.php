@@ -45,7 +45,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('appointments.index');
 
     // 📄 Show the booking form for a specific service
-    Route::get('/appointments/book/{service}', [AppointmentBookingController::class, 'create'])
+    Route::get('/appointments/book/{service}', \App\Livewire\BookAppointment::class)
         ->name('appointments.book');
 
     // ✅ Handle form submission (store booking)

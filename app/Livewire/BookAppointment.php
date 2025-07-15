@@ -129,7 +129,7 @@ class BookAppointment extends Component
             'course' => $this->course,
         ]);
 
-        session()->flash('success', 'Appointment booked successfully!');
+        session()->flash('success', 'Appointment booked successfully! 📌 Reminder: This clinic is for enrolled students only.');
         return redirect()->route('appointments.index');
     }
 

@@ -3,24 +3,21 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-
-use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\CheckboxList;
-use Spatie\Permission\Models\Role;
-use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\TextColumn;
 
 class UserResource extends Resource
 {
+
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
@@ -33,9 +30,9 @@ class UserResource extends Resource
             ->schema([
                 TextInput::make('name')->required(),
                 TextInput::make('email')->email()->required(),
-                TextInput::make('password')->password()->required()->dehydrateStateUsing(fn ($state) => bcrypt($state))
-                ->dehydrated(fn ($state) => filled($state)) ->visibleOn('create'), // only update if not empty
-                // optional: hide on edit
+                // TextInput::make('password')->password()->required()->dehydrateStateUsing(fn ($state) => bcrypt($state))
+                // ->dehydrated(fn ($state) => filled($state)) ->visibleOn('create'), // only update if not empty
+                // // optional: hide on edit
 
                 CheckboxList::make('roles')
                     ->relationship('roles', 'name')

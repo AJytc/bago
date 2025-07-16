@@ -9,6 +9,7 @@ use App\Http\Controllers\AppointmentBookingController;
 use App\Livewire\BookAppointment;
 use App\Livewire\MedstaffDashboard;
 use App\Http\Controllers\Medstaff\AppointmentActionController;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
@@ -41,12 +42,15 @@ Route::middleware([
     })->name('dashboard');
 
     // 🩺 MedStaff-specific Appointments page
-    Route::get('/medstaff/appointments', function () {
+    Route::get('/medstaff/appointments', function (Request $request) {
         if (!Auth::user()?->hasRole('medstaff')) {
             abort(403);
         }
 
-        $appointments = Appointment::with('clinicService')->latest()->get();
+        $appointments = Appointment::with('clinicService')
+            ->when($request->status, fn ($query) => $query->where('status', $request->status))
+            ->latest()
+            ->get();
 
         return view('medstaff.appointments', compact('appointments'));
     })->name('medstaff.appointments');
@@ -60,6 +64,9 @@ Route::middleware([
 
     Route::post('/medstaff/appointments/{appointment}/complete', [AppointmentActionController::class, 'complete'])
         ->name('medstaff.appointments.complete');
+
+    Route::get('/medstaff/appointments/{appointment}/reschedule', [AppointmentActionController::class, 'edit'])->name('medstaff.appointments.reschedule');
+    Route::post('/medstaff/appointments/{appointment}/reschedule', [AppointmentActionController::class, 'update'])->name('medstaff.appointments.reschedule.update');
 });
 
 // 👤 Authenticated User Appointments

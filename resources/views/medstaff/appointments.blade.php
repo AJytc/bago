@@ -16,6 +16,19 @@
                 </div>
             @endif
 
+            {{-- ✅ Filter by Status --}}
+            <form method="GET" action="{{ route('medstaff.appointments') }}" class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Status:</label>
+                <select name="status" onchange="this.form.submit()" class="border border-gray-300 rounded px-3 py-1 pr-8 text-sm">
+                    <option value="">All Statuses</option>
+                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="accepted" {{ request('status') === 'accepted' ? 'selected' : '' }}>Accepted</option>
+                    <option value="rescheduled" {{ request('status') === 'rescheduled' ? 'selected' : '' }}>Rescheduled</option>
+                    <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                </select>
+            </form>
+
             @if($appointments->count())
                 <table class="min-w-full text-sm text-left border">
                     <thead class="bg-gray-100">
@@ -58,13 +71,25 @@
                                                     Reject
                                                 </button>
                                             </form>
+
+                                            <form action="{{ route('medstaff.appointments.reschedule', $appt) }}" method="GET">
+                                                <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs">
+                                                    Reschedule
+                                                </button>
+                                            </form>
                                         </div>
-                                    @elseif ($appt->status === 'accepted')
-                                        <div class="flex justify-center">
+                                    @elseif ($appt->status === 'accepted' || $appt->status === 'rescheduled')
+                                        <div class="flex justify-center space-x-2">
                                             <form action="{{ route('medstaff.appointments.complete', $appt) }}" method="POST">
                                                 @csrf
                                                 <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs">
                                                     Mark as Completed
+                                                </button>
+                                            </form>
+
+                                            <form action="{{ route('medstaff.appointments.reschedule', $appt) }}" method="GET">
+                                                <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs">
+                                                    Reschedule
                                                 </button>
                                             </form>
                                         </div>

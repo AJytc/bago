@@ -77,4 +77,14 @@ class AnnouncementResource extends Resource
             'edit' => Pages\EditAnnouncement::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) \App\Models\Announcement::count();
+    }
+
+    public static function getNavigationBadgeColor(): string | array | null
+    {
+        return 'warning'; // 🟠
+    }
 }

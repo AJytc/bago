@@ -123,4 +123,14 @@ class ClinicServiceResource extends Resource
             'edit' => Pages\EditClinicService::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) \App\Models\ClinicService::count();
+    }
+
+    public static function getNavigationBadgeColor(): string | array | null
+    {
+        return 'info'; // 🔷
+    }
 }

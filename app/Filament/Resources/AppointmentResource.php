@@ -161,4 +161,14 @@ class AppointmentResource extends Resource
             'view' => Pages\ViewAppointment::route('/{record}'),
         ];
     }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) \App\Models\Appointment::count();
+    }
+
+    public static function getNavigationBadgeColor(): string | array | null
+    {
+        return 'success'; // 🟢
+    }
 }

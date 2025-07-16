@@ -13,12 +13,16 @@ use Spatie\Permission\Traits\HasRoles;
 
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
     use HasApiTokens;
     use HasRoles;
-
+    use LogsActivity;
+    
+    protected static $logName = 'auth';
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
     use HasProfilePhoto;
@@ -70,7 +74,15 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         ];
     }
 
-    //This is for restriction
+    // ✅ Required for Spatie Activitylog v4+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('auth')
+            ->dontSubmitEmptyLogs(); // avoids logging model changes unless explicitly done
+    }
+
+    // ✅ Restrict Filament Admin Panel access
     public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {

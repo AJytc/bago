@@ -16,4 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create();
+    })
+    // ✅ Register your EventServiceProvider here
+    ->withProviders([
+        App\Providers\EventServiceProvider::class,
+    ])
+    ->create();

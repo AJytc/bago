@@ -7,6 +7,8 @@ use App\Models\ClinicService;
 use App\Models\Appointment;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AppointmentPendingMail;
 
 class BookAppointment extends Component
 {
@@ -126,7 +128,7 @@ class BookAppointment extends Component
         }
 
         // Save
-        Appointment::create([
+        $appointment = Appointment::create([
             'user_id' => Auth::id(),
             'clinic_service_id' => $this->service->id,
             'appointment_datetime' => $selectedDateTime,
@@ -137,6 +139,9 @@ class BookAppointment extends Component
             'course' => $this->course,
         ]);
 
+        // ✅ Send pending confirmation email
+        Mail::to($appointment->email)->send(new AppointmentPendingMail($appointment));
+        
         session()->flash('success', 'Appointment booked successfully! 📌 Reminder: This clinic is for enrolled students only.');
         return redirect()->route('appointments.index');
     }

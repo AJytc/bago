@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\ClinicService;
+use App\Models\Appointment;
 use App\Http\Controllers\AppointmentBookingController;
 use App\Livewire\BookAppointment;
 use App\Livewire\MedstaffDashboard;
@@ -44,16 +45,11 @@ Route::middleware([
             abort(403);
         }
 
-        return view('medstaff.appointments');
+        $appointments = Appointment::latest()->get();
+
+        return view('medstaff.appointments', compact('appointments'));
     })->name('medstaff.appointments');
 });
-
-// Route::middleware(['auth', 'verified'])->group(function () {
-//     Route::get('/appointments', function () {
-//         $services = \App\Models\ClinicService::all(); // 👈 fetch services from database
-//         return view('appointments', compact('services')); // 👈 pass to view
-//     })->name('appointments');
-// });
 
 // 👤 Authenticated User Appointments
 Route::middleware(['auth'])->group(function () {

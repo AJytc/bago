@@ -58,22 +58,30 @@ class BookAppointment extends Component
     private function generateAvailableDates($service)
     {
         $dates = [];
-        $startDate = now()->startOfDay(); // today
+        $startDate = now()->startOfDay(); // Start checking from today
         $until = $service->active_until ?? now()->addWeeks(4)->startOfDay();
         $days = $service->days_of_week ?? [];
 
         while ($startDate->lte($until)) {
-            if (
-                $startDate->isToday() || $startDate->isAfter(now()) // today or future
-            ) {
-                if (in_array($startDate->format('l'), $days)) {
+            $isValidDay = in_array($startDate->format('l'), $days);
+
+            if ($isValidDay) {
+                if ($startDate->isToday()) {
+                    // Check if current time is before service's end time
+                    $currentTime = now();
+                    $endTimeToday = Carbon::createFromTimeString($service->end_time);
+
+                    // If current time has not passed the end time, allow today
+                    if ($currentTime->lt($endTimeToday)) {
+                        $dates[] = $startDate->format('Y-m-d');
+                    }
+                } elseif ($startDate->isAfter(now())) {
+                    // Future dates are valid if they match allowed weekdays
                     $dates[] = $startDate->format('Y-m-d');
                 }
             }
-
             $startDate->addDay();
         }
-
         return $dates;
     }
 

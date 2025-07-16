@@ -8,6 +8,7 @@ use App\Models\Appointment;
 use App\Http\Controllers\AppointmentBookingController;
 use App\Livewire\BookAppointment;
 use App\Livewire\MedstaffDashboard;
+use App\Http\Controllers\Medstaff\AppointmentActionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -45,10 +46,20 @@ Route::middleware([
             abort(403);
         }
 
-        $appointments = Appointment::latest()->get();
+        $appointments = Appointment::with('clinicService')->latest()->get();
 
         return view('medstaff.appointments', compact('appointments'));
     })->name('medstaff.appointments');
+
+    // ✅ Accept/Reject appointment actions
+    Route::post('/medstaff/appointments/{appointment}/accept', [AppointmentActionController::class, 'accept'])
+        ->name('medstaff.appointments.accept');
+
+    Route::post('/medstaff/appointments/{appointment}/reject', [AppointmentActionController::class, 'reject'])
+        ->name('medstaff.appointments.reject');
+
+    Route::post('/medstaff/appointments/{appointment}/complete', [AppointmentActionController::class, 'complete'])
+        ->name('medstaff.appointments.complete');
 });
 
 // 👤 Authenticated User Appointments

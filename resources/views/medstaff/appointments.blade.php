@@ -9,6 +9,13 @@
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-4">
             <h3 class="text-lg font-bold mb-4">Appointments</h3>
 
+            {{-- ✅ Flash success message --}}
+            @if (session('success'))
+                <div class="mb-4 p-2 bg-green-100 text-green-700 rounded">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             @if($appointments->count())
                 <table class="min-w-full text-sm text-left border">
                     <thead class="bg-gray-100">
@@ -21,6 +28,7 @@
                             <th class="px-3 py-2 border">Service</th>
                             <th class="px-3 py-2 border">Date & Time</th>
                             <th class="px-3 py-2 border">Status</th>
+                            <th class="px-3 py-2 border">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -31,9 +39,39 @@
                                 <td class="px-3 py-2">{{ $appt->middle_initial }}</td>
                                 <td class="px-3 py-2">{{ $appt->email }}</td>
                                 <td class="px-3 py-2">{{ $appt->course }}</td>
-                                <td class="px-3 py-2">{{ $appt->service_name }}</td>
+                                <td class="px-3 py-2">{{ $appt->clinicService->name ?? 'N/A' }}</td>
                                 <td class="px-3 py-2">{{ \Carbon\Carbon::parse($appt->appointment_datetime)->format('M d, Y h:i A') }}</td>
-                                <td class="px-3 py-2">{{ ucfirst($appt->status) }}</td>
+                                <td class="px-3 py-2 capitalize">{{ $appt->status }}</td>
+                                <td class="px-3 py-2 text-center">
+                                    @if ($appt->status === 'pending')
+                                        <div class="flex justify-center space-x-2">
+                                            <form action="{{ route('medstaff.appointments.accept', $appt) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs">
+                                                    Accept
+                                                </button>
+                                            </form>
+
+                                            <form action="{{ route('medstaff.appointments.reject', $appt) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs">
+                                                    Reject
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @elseif ($appt->status === 'accepted')
+                                        <div class="flex justify-center">
+                                            <form action="{{ route('medstaff.appointments.complete', $appt) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs">
+                                                    Mark as Completed
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @else
+                                        <span class="text-sm text-gray-600 capitalize">{{ $appt->status }}</span>
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

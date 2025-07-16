@@ -22,9 +22,10 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
 
         $admin = User::create([
-        'name' => 'Admin',
-        'email' => 'admin@gmail.com',
-        'password' => bcrypt('password'),
+            'name' => 'Admin',
+            'email' => 'admin@gmail.com',
+            'email_verified_at' => now(),
+            'password' => bcrypt('password'),
         ]);
         $admin->assignRole('admin');
 

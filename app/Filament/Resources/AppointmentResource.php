@@ -99,6 +99,10 @@ class AppointmentResource extends Resource
                     ->label('Appointment Date & Time')
                     ->dateTime()
                     ->sortable(),
+                TextColumn::make('original_appointment_datetime')
+                    ->label('Original Appointment Date & Time')
+                    ->dateTime()
+                    ->sortable(),
 
                 BadgeColumn::make('status')
                     ->label('Status')

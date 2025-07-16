@@ -5,21 +5,30 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\ClinicService;
 use App\Http\Controllers\AppointmentBookingController;
+use App\Livewire\BookAppointment;
+use App\Livewire\MedstaffDashboard;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+// 🔐 Authenticated + verified users (Jetstream)
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+
+    // 📌 Main Dashboard (based on role)
     Route::get('/dashboard', function () {
         $user = Auth::user();
 
         if ($user->hasRole('admin')){
             return view('admin.dashboard');
+        }
+
+        if ($user->hasRole('medstaff')){
+            return app(\App\Livewire\MedstaffDashboard::class)->render();
         }
 
         if ($user->hasRole('user')){
@@ -28,15 +37,25 @@ Route::middleware([
 
         abort(403);
     })->name('dashboard');
+
+    // 🩺 MedStaff-specific Appointments page
+    Route::get('/medstaff/appointments', function () {
+        if (!Auth::user()?->hasRole('medstaff')) {
+            abort(403);
+        }
+
+        return view('medstaff.appointments');
+    })->name('medstaff.appointments');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/appointments', function () {
-        $services = \App\Models\ClinicService::all(); // 👈 fetch services from database
-        return view('appointments', compact('services')); // 👈 pass to view
-    })->name('appointments');
-});
+// Route::middleware(['auth', 'verified'])->group(function () {
+//     Route::get('/appointments', function () {
+//         $services = \App\Models\ClinicService::all(); // 👈 fetch services from database
+//         return view('appointments', compact('services')); // 👈 pass to view
+//     })->name('appointments');
+// });
 
+// 👤 Authenticated User Appointments
 Route::middleware(['auth'])->group(function () {
     // 🗓 Show all available clinic services (user home appointment page)
     Route::get('/appointments', function () {

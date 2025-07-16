@@ -21,6 +21,12 @@
                             {{ __('Appointments') }}
                         </x-nav-link>
                     @endrole
+
+                    @role('medstaff')
+                        <x-nav-link href="{{ route('medstaff.appointments') }}" :active="request()->routeIs('medstaff.appointments')">
+                            {{ __('Appointments') }}
+                        </x-nav-link>
+                    @endrole
                 </div>
             </div>
 
@@ -151,6 +157,12 @@
 
             @role('user')
                 <x-responsive-nav-link href="{{ route('appointments.index') }}" :active="request()->routeIs('appointments.index')">
+                    {{ __('Appointments') }}
+                </x-responsive-nav-link>
+            @endrole
+
+            @role('medstaff')
+                <x-responsive-nav-link href="{{ route('medstaff.appointments') }}" :active="request()->routeIs('medstaff.appointments')">
                     {{ __('Appointments') }}
                 </x-responsive-nav-link>
             @endrole

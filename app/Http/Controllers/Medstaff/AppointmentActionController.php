@@ -53,6 +53,10 @@ class AppointmentActionController extends Controller
             'appointment_datetime' => 'required|date|after:now',
         ]);
 
+        if (!$appointment->original_appointment_datetime) {
+            $appointment->original_appointment_datetime = $appointment->appointment_datetime;
+        }
+
         $appointment->appointment_datetime = $request->appointment_datetime;
         $appointment->status = 'rescheduled';
         $appointment->save();

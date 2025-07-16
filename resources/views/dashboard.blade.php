@@ -28,6 +28,11 @@
                 @endforelse
             </div>
 
+            {{-- ✅ Upcoming Appointment Section --}}
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6 mb-6">
+                @livewire('dashboard-upcoming-appointment')
+            </div>
+
             {{-- Your other dashboard content --}}
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <!-- <x-welcome /> -->

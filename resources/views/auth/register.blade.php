@@ -34,7 +34,6 @@
                     <x-label for="terms">
                         <div class="flex items-center">
                             <x-checkbox name="terms" id="terms" required />
-
                             <div class="ms-2">
                                 {!! __('I agree to the :terms_of_service and :privacy_policy', [
                                         'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('Terms of Service').'</a>',
@@ -46,6 +45,9 @@
                 </div>
             @endif
 
+            <!-- 🔒 Hidden reCAPTCHA token -->
+            <input type="hidden" name="recaptcha_token" id="recaptcha_token">
+
             <div class="flex items-center justify-end mt-4">
                 <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
                     {{ __('Already registered?') }}
@@ -56,5 +58,27 @@
                 </x-button>
             </div>
         </form>
+
+        <!-- ✅ Load reCAPTCHA script -->
+        <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+
+        <!-- ✅ Execute reCAPTCHA and attach token -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.querySelector('form');
+
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    grecaptcha.ready(function () {
+                        grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', { action: 'register' })
+                            .then(function (token) {
+                                document.getElementById('recaptcha_token').value = token;
+                                form.submit();
+                            });
+                    });
+                });
+            });
+        </script>
     </x-authentication-card>
 </x-guest-layout>

@@ -65,8 +65,12 @@ Route::middleware([
     Route::post('/medstaff/appointments/{appointment}/complete', [AppointmentActionController::class, 'complete'])
         ->name('medstaff.appointments.complete');
 
-    Route::get('/medstaff/appointments/{appointment}/reschedule', [AppointmentActionController::class, 'edit'])->name('medstaff.appointments.reschedule');
-    Route::post('/medstaff/appointments/{appointment}/reschedule', [AppointmentActionController::class, 'update'])->name('medstaff.appointments.reschedule.update');
+    // ✅ Reschedule routes
+    Route::get('/medstaff/appointments/{appointment}/reschedule', [AppointmentActionController::class, 'edit'])
+        ->name('medstaff.appointments.reschedule');
+
+    Route::post('/medstaff/appointments/{appointment}/reschedule', [AppointmentActionController::class, 'update'])
+        ->name('medstaff.appointments.reschedule.update');
 });
 
 // 👤 Authenticated User Appointments

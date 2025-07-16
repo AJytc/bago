@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Medstaff;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AppointmentStatusChanged;
 
 class AppointmentActionController extends Controller
 {
@@ -13,7 +15,9 @@ class AppointmentActionController extends Controller
         $appointment->status = 'accepted';
         $appointment->save();
 
-        return back()->with('success', 'Appointment accepted.');
+        Mail::to($appointment->email)->send(new AppointmentStatusChanged($appointment, 'accepted'));
+
+        return back()->with('success', 'Appointment accepted and user notified.');
     }
 
     public function reject(Appointment $appointment)
@@ -21,7 +25,9 @@ class AppointmentActionController extends Controller
         $appointment->status = 'rejected';
         $appointment->save();
 
-        return back()->with('success', 'Appointment rejected.');
+        Mail::to($appointment->email)->send(new AppointmentStatusChanged($appointment, 'rejected'));
+
+        return back()->with('success', 'Appointment rejected and user notified.');
     }
 
     public function complete(Appointment $appointment)
@@ -51,6 +57,8 @@ class AppointmentActionController extends Controller
         $appointment->status = 'rescheduled';
         $appointment->save();
 
-        return redirect()->route('medstaff.appointments')->with('success', 'Appointment rescheduled successfully.');
+        Mail::to($appointment->email)->send(new AppointmentStatusChanged($appointment, 'rescheduled'));
+
+        return redirect()->route('medstaff.appointments')->with('success', 'Appointment rescheduled and user notified.');
     }
 }

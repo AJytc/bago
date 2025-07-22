@@ -20,6 +20,10 @@ class BookAppointment extends Component
     public $availableDates = [];
     public $availableTimes = [];
 
+    // ✅ Holiday-related properties
+    public $isHoliday = false;
+    public $holidayName = null;
+
     public function mount(ClinicService $service)
     {
         $this->service = $service;
@@ -28,6 +32,7 @@ class BookAppointment extends Component
 
     public function updatedSelectedDate($value)
     {
+        $this->checkIfHoliday($value);
         $this->fetchAvailableTimes();
     }
 
@@ -60,7 +65,7 @@ class BookAppointment extends Component
     private function generateAvailableDates($service)
     {
         $dates = [];
-        $startDate = now()->startOfDay(); // Start checking from today
+        $startDate = now()->startOfDay();
         $until = $service->active_until ?? now()->addWeeks(4)->startOfDay();
         $days = $service->days_of_week ?? [];
 
@@ -69,22 +74,41 @@ class BookAppointment extends Component
 
             if ($isValidDay) {
                 if ($startDate->isToday()) {
-                    // Check if current time is before service's end time
                     $currentTime = now();
                     $endTimeToday = Carbon::createFromTimeString($service->end_time);
 
-                    // If current time has not passed the end time, allow today
                     if ($currentTime->lt($endTimeToday)) {
                         $dates[] = $startDate->format('Y-m-d');
                     }
                 } elseif ($startDate->isAfter(now())) {
-                    // Future dates are valid if they match allowed weekdays
                     $dates[] = $startDate->format('Y-m-d');
                 }
             }
             $startDate->addDay();
         }
+
         return $dates;
+    }
+
+    private function checkIfHoliday($date)
+    {
+        try {
+            $response = file_get_contents("https://date.nager.at/api/v3/PublicHolidays/" . now()->year . "/PH");
+            $holidays = collect(json_decode($response, true));
+
+            $match = $holidays->firstWhere('date', $date);
+
+            if ($match) {
+                $this->isHoliday = true;
+                $this->holidayName = $match['localName'];
+            } else {
+                $this->isHoliday = false;
+                $this->holidayName = null;
+            }
+        } catch (\Exception $e) {
+            $this->isHoliday = false;
+            $this->holidayName = null;
+        }
     }
 
     public function bookAppointment()
@@ -105,9 +129,14 @@ class BookAppointment extends Component
             return;
         }
 
+        // 🚫 Prevent booking on a holiday
+        if ($this->isHoliday) {
+            $this->addError('selected_date', 'You cannot book on a holiday: ' . $this->holidayName);
+            return;
+        }
+
         $selectedDateTime = $this->selected_date . ' ' . $this->selected_time;
 
-        // Check if time is taken
         $exists = Appointment::where('clinic_service_id', $this->service->id)
             ->where('appointment_datetime', $selectedDateTime)
             ->exists();
@@ -117,7 +146,6 @@ class BookAppointment extends Component
             return;
         }
 
-        // Check if daily limit reached
         $dayCount = Appointment::where('clinic_service_id', $this->service->id)
             ->whereDate('appointment_datetime', $this->selected_date)
             ->count();
@@ -127,7 +155,6 @@ class BookAppointment extends Component
             return;
         }
 
-        // Save
         $appointment = Appointment::create([
             'user_id' => Auth::id(),
             'clinic_service_id' => $this->service->id,
@@ -139,9 +166,8 @@ class BookAppointment extends Component
             'course' => $this->course,
         ]);
 
-        // ✅ Send pending confirmation email
         Mail::to($appointment->email)->send(new AppointmentPendingMail($appointment));
-        
+
         session()->flash('success', 'Appointment booked successfully! 📌 Reminder: This clinic is for enrolled students only.');
         return redirect()->route('appointments.index');
     }

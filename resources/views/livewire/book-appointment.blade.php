@@ -3,6 +3,7 @@
         <h2 class="font-semibold text-xl text-gray-800">Book Appointment: {{ $service->name }}</h2>
     </x-slot>
 
+    {{-- Success Message --}}
     @if (session('success'))
         <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show"
              class="fixed top-4 right-4 z-50 bg-green-100 text-green-800 border border-green-300 px-4 py-2 rounded shadow">
@@ -10,6 +11,7 @@
         </div>
     @endif
 
+    {{-- Error Message --}}
     @if (session('error'))
         <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show"
              class="fixed top-4 right-4 z-50 bg-red-100 text-red-800 border border-red-300 px-4 py-2 rounded shadow mt-2">
@@ -44,6 +46,7 @@
             </select>
             @error('course') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
 
+            {{-- Date Selection --}}
             <label class="block mt-4">Select Date</label>
             <select wire:model="selected_date" wire:change="$set('selected_date', $event.target.value)" class="w-full border p-2 rounded">
                 <option value="">Choose a date</option>
@@ -53,6 +56,15 @@
             </select>
             @error('selected_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
 
+            {{-- 🟡 Holiday Warning --}}
+            @if ($isHoliday)
+                <div class="bg-yellow-100 text-yellow-800 p-3 rounded mb-2">
+                    ⚠️ <strong>{{ \Carbon\Carbon::parse($selected_date)->format('F j, Y') }}</strong> is a public holiday: <strong>{{ $holidayName }}</strong>.
+                    Please choose another date.
+                </div>
+            @endif
+
+            {{-- Time Selection --}}
             <label class="block mt-4">Select Time</label>
             <select wire:model="selected_time" class="w-full border p-2 rounded">
                 <option value="">Choose a time</option>

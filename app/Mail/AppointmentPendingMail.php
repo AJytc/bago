@@ -38,7 +38,7 @@ class AppointmentPendingMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.appointment-pending',
+            markdown: 'emails.appointment-pending',
             with: [
                 'appointment' => $this->appointment,
             ],

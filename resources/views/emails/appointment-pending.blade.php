@@ -1,15 +1,18 @@
-<p>Hello {{ $appointment->first_name }} {{ $appointment->middle_initial }} {{ $appointment->surname }},</p>
+@component('mail::message')
+# Hello {{ $appointment->first_name }} {{ $appointment->middle_initial }} {{ $appointment->surname }},
 
-<p>We have received your appointment request for:</p>
+We have received your appointment request for:
 
-<ul>
-    <li><strong>Service:</strong> {{ $appointment->clinicService->name }}</li>
-    <li><strong>Date:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_datetime)->timezone('Asia/Manila')->toFormattedDateString() }}</li>
-    <li><strong>Time:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_datetime)->timezone('Asia/Manila')->format('h:i A') }}</li>
-</ul>
+@component('mail::panel')
+**Service:** {{ $appointment->clinicService->name }}  
+**Date:** {{ \Carbon\Carbon::parse($appointment->appointment_datetime)->timezone('Asia/Manila')->toFormattedDateString() }}  
+**Time:** {{ \Carbon\Carbon::parse($appointment->appointment_datetime)->timezone('Asia/Manila')->format('h:i A') }}
+@endcomponent
 
-<p>🕒 Your appointment is currently <strong>pending approval</strong>.</p>
+🕒 Your appointment is currently **pending approval**.
 
-<p>You will receive another email once your appointment has been approved or declined.</p>
+You will receive another email once your appointment has been approved or declined.
 
-<p>Thank you for using the Clinic Online Scheduling system!</p>
+Thanks for using the **Clinic Online Scheduling System**.
+
+@endcomponent

@@ -1,7 +1,12 @@
-<p>Hello {{ $appointment->first_name }} {{ $appointment->surname }},</p>
+@component('mail::message')
+# Hello {{ $appointment->first_name }} {{ $appointment->surname }},
 
-<p>This is a reminder that your appointment is scheduled for:</p>
+This is a friendly reminder that your appointment is scheduled for:
 
-<p><strong>{{ \Carbon\Carbon::parse($appointment->appointment_datetime)->format('F j, Y \a\t g:i A') }}</strong></p>
+@component('mail::panel')
+**{{ \Carbon\Carbon::parse($appointment->appointment_datetime)->timezone('Asia/Manila')->format('F j, Y \a\t g:i A') }}**
+@endcomponent
 
-<p>Please be on time. Thank you!</p>
+Please be on time. Thank you for your patience!
+
+@endcomponent

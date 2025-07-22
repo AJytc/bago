@@ -15,6 +15,7 @@ class DashboardUpcomingAppointment extends Component
     {
         $this->upcoming = Appointment::where('email', Auth::user()->email)
             ->where('appointment_datetime', '>=', Carbon::now())
+            ->where('status', '!=', 'cancelled') // Optional: Skip cancelled
             ->orderBy('appointment_datetime', 'asc')
             ->first();
     }

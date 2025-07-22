@@ -13,6 +13,11 @@
             </p>
         </div>
     @else
-        <p class="text-gray-500">You have no upcoming appointments.</p>
+        <p class="text-gray-500 mb-4">You have no upcoming appointments.</p>
+
+        <a href="{{ route('appointments.index') }}"
+           class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+            Book an Appointment
+        </a>
     @endif
 </div>

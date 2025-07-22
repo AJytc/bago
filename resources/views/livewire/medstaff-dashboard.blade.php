@@ -35,17 +35,30 @@
         </div>
 
         {{-- 🔔 Notifications & Reminders --}}
-        <div class="mt-10">
-            <h2 class="text-xl font-semibold mb-4">🔔 Notifications & Reminders</h2>
+        <div class="mt-12">
+            <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
+                Notifications & Reminders
+            </h2>
 
             {{-- ⏰ Upcoming Appointments in 24 Hours --}}
-            <div class="mb-6">
-                <h3 class="text-lg font-bold text-blue-700">⏰ Upcoming Appointments (next 24 hours)</h3>
+            <div class="mb-10">
+                <h3 class="text-lg font-bold text-blue-700 mb-3">Upcoming Appointments (Next 24 Hours)</h3>
                 @forelse ($upcomingAppointments as $appt)
-                    <div class="p-3 bg-blue-50 rounded mb-2 border border-blue-200">
-                        <strong>{{ $appt->surname }}, {{ $appt->first_name }}</strong> —
-                        {{ $appt->clinicService->name ?? 'Service' }} at
-                        <span class="font-semibold">{{ \Carbon\Carbon::parse($appt->appointment_datetime)->format('M d, Y h:i A') }}</span>
+                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-sm mb-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between">
+                            <div>
+                                <p class="font-semibold text-gray-800">
+                                    {{ $appt->surname }}, {{ $appt->first_name }}
+                                    <span class="text-sm font-normal text-gray-600">— {{ $appt->clinicService->name ?? 'Service' }}</span>
+                                </p>
+                                <p class="text-sm text-gray-600">
+                                    🕒 {{ \Carbon\Carbon::parse($appt->appointment_datetime)->format('M d, Y h:i A') }}
+                                </p>
+                            </div>
+                            <span class="inline-block mt-2 sm:mt-0 px-3 py-1 bg-blue-200 text-blue-800 text-sm font-medium rounded-full">
+                                Upcoming
+                            </span>
+                        </div>
                     </div>
                 @empty
                     <p class="text-sm text-gray-600">No upcoming appointments in the next 24 hours.</p>
@@ -54,12 +67,23 @@
 
             {{-- ⚠️ Pending Appointments --}}
             <div>
-                <h3 class="text-lg font-bold text-yellow-700">⚠️ Pending Appointments</h3>
+                <h3 class="text-lg font-bold text-yellow-700 mb-3">Pending Appointments</h3>
                 @forelse ($pendingAppointments as $appt)
-                    <div class="p-3 bg-yellow-50 rounded mb-2 border border-yellow-200">
-                        <strong>{{ $appt->surname }}, {{ $appt->first_name }}</strong> —
-                        {{ $appt->clinicService->name ?? 'Service' }} —
-                        <span class="text-sm text-gray-700">Requested on {{ $appt->created_at->format('M d, Y h:i A') }}</span>
+                    <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm mb-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between">
+                            <div>
+                                <p class="font-semibold text-gray-800">
+                                    {{ $appt->surname }}, {{ $appt->first_name }}
+                                    <span class="text-sm font-normal text-gray-600">— {{ $appt->clinicService->name ?? 'Service' }}</span>
+                                </p>
+                                <p class="text-sm text-gray-600">
+                                    📅 Requested on {{ $appt->created_at->format('M d, Y h:i A') }}
+                                </p>
+                            </div>
+                            <span class="inline-block mt-2 sm:mt-0 px-3 py-1 bg-yellow-200 text-yellow-800 text-sm font-medium rounded-full">
+                                Pending
+                            </span>
+                        </div>
                     </div>
                 @empty
                     <p class="text-sm text-gray-600">No pending appointments.</p>
@@ -80,7 +104,6 @@
                     Our clinic is dedicated to providing accessible, student-friendly healthcare services with a focus on quality,
                     compassion, and convenience. Whether it’s a routine check-up, a consultation, or an emergency concern, we’re here to help.
                 </p>
-
                 <p class="text-gray-700 text-base sm:text-lg leading-relaxed">
                     Located on campus and operated by licensed professionals, we aim to support your well-being every step of the way.
                 </p>

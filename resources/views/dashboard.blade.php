@@ -77,7 +77,7 @@
                     <span class="text-2xl">📍</span>
                     <div>
                         <strong>Location:</strong><br>
-                        1st Floor, Student Center, XYZ University
+                        Room 105, 1st Floor, Civic Center, San Isidro, City of San Fernando, Pampanga, Philippines
                     </div>
                 </div>
             </div>

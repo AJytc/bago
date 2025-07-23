@@ -44,5 +44,16 @@
                 </x-button>
             </div>
         </form>
+
+        <!-- 👉 Register Link -->
+        <div class="mt-4 text-center">
+            <p class="text-sm text-gray-600">
+                {{ __("Don't have an account?") }}
+                <a href="{{ route('register') }}" class="text-blue-600 hover:underline">
+                    {{ __('Register') }}
+                </a>
+            </p>
+        </div>
+
     </x-authentication-card>
 </x-guest-layout>

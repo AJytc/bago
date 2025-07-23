@@ -1,13 +1,21 @@
-<p>Hello {{ $user->name }},</p>
+@component('mail::message')
+# Hello {{ $user->name }},
 
-<p>Your account has been created. You can now log in using the following credentials:</p>
+Welcome to the **Clinic Online Scheduling System**!  
+Your account has been created and you're now ready to log in using the credentials below:
 
-<ul>
-    <li><strong>Email:</strong> {{ $user->email }}</li>
-    <li><strong>Password:</strong> {{ $plainPassword }}</li>
-</ul>
+@component('mail::panel')
+**Email:** {{ $user->email }}  
+**Password:** {{ $plainPassword }}
+@endcomponent
 
-<p>📧 Please verify your email before logging in.</p>
-<p>🔒 We recommend changing your password after your first login.</p>
+> 📧 **Please verify your email before logging in.**  
+> 🔒 **We recommend changing your password after your first login.**
 
-<p>Thank you!</p>
+@component('mail::button', ['url' => url('/login')])
+Login Now
+@endcomponent
+
+Thanks,  
+{{ config('app.name') }}
+@endcomponent

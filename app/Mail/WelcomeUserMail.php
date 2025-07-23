@@ -37,7 +37,7 @@ class WelcomeUserMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.welcome-user', // ✅ This is your email Blade view
+            markdown: 'emails.welcome-user', // ⬅️ Use `markdown:` instead of `view:`
             with: [
                 'user' => $this->user,
                 'plainPassword' => $this->plainPassword,
